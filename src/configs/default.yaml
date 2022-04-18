@@ -1,6 +1,6 @@
 "policy_path" : "BUGGY_WP_TEST.zip"
 "motors_on" : True 
-"controller_source" : "nn" # "joystick" # nn/joystick
+"controller_source" : "mlp" # "joystick" # mlp/joystick
 "update_period" : 0.005
 "motor_scalar" : 0.4
 "throttle_offset" : 0.5
