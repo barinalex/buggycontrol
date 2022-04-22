@@ -3,7 +3,7 @@ import Adafruit_PCA9685
 import time
 import rospy
 import numpy as np
-from buggycontrol.msg import Actions
+from buggycontrol.msg import ActionsStamped
 from utils import loaddefaultconfig
 
 
@@ -20,7 +20,7 @@ class PWMDriver:
         self.arm_escs()
         print("Finished initializing the PWMdriver. ")
         rospy.init_node("pwmdriver")
-        rospy.Subscriber("servos", Actions, self.callback)
+        rospy.Subscriber("servos", ActionsStamped, self.callback)
         rospy.spin()
 
     def write_servos(self, vals):
@@ -43,7 +43,7 @@ class PWMDriver:
         self.write_servos([self.throttlemin, self.turnmiddle])
         time.sleep(0.3)
 
-    def callback(self, msg: Actions):
+    def callback(self, msg: ActionsStamped):
         """
         :param msg: actions that are to be written to motors
         """

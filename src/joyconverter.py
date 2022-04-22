@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
-from buggycontrol.msg import Actions
+from buggycontrol.msg import ActionsStamped
+from std_msgs.msg import Header
 from sensor_msgs.msg import Joy
 from threading import Lock
 import numpy as np
@@ -14,7 +15,7 @@ class JoyConverter:
     def __init__(self):
         rospy.init_node("joyconverter")
         rospy.Subscriber("joy", Joy, self.callback)
-        pub = rospy.Publisher("actions", Actions, queue_size=10)
+        pub = rospy.Publisher("actions", ActionsStamped, queue_size=10)
         self.actlock = Lock()
         self.msg = None
         rate = rospy.Rate(200)
@@ -30,7 +31,8 @@ class JoyConverter:
         :param msg: raw input from joystick
         """
         with self.actlock:
-            self.msg = Actions()
+            self.msg = ActionsStamped()
+            msg.header = Header(stamp=rospy.Time.now(), frame_id="base_link", seq=ctr)
             self.msg.throttle, self.msg.turn = msg.axes[1], msg.axes[3]
             self.msg.buttonA, self.msg.buttonB = msg.buttons[0], msg.buttons[1]
 
