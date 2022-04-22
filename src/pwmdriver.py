@@ -10,13 +10,14 @@ from utils import loaddefaultconfig
 class PWMDriver:
     def __init__(self):
         self.config = loaddefaultconfig()
-        self.pwm_freq = int(1. / self.config["update_period"])
-        self.servo_ids = [0, 1] # MOTOR IS 0, TURN is 1
+        pwm_freq = int(1. / self.config["update_period"])
+        self.pulse_denominator = (1000000. / pwm_freq) / 4096.
+        self.servo_ids = [0, 1] # THROTTLE IS 0, STEERING is 1
         self.throttlemin = 0.5
-        self.turnmiddle = 0.5
+        self.steeringmiddle = 0.5
         print("Initializing the PWMdriver. ")
         self.pwm = Adafruit_PCA9685.PCA9685()
-        self.pwm.set_pwm_freq(self.pwm_freq)
+        self.pwm.set_pwm_freq(pwm_freq)
         self.arm_escs()
         print("Finished initializing the PWMdriver. ")
         rospy.init_node("pwmdriver")
@@ -29,7 +30,8 @@ class PWMDriver:
         :return: None
         """
         for sid in self.servo_ids:
-            pulse_length = ((np.clip(vals[sid], 0, 1) + 1) * 1000) / ((1000000. / self.pwm_freq) / 4096.)
+            val = np.clip(vals[sid], 0, 1)
+            pulse_length = ((val + 1) * 1000) / self.pulse_denominator
             self.pwm.set_pwm(sid, 0, int(pulse_length))
 
     def arm_escs(self):
@@ -40,7 +42,7 @@ class PWMDriver:
         """
         time.sleep(0.1)
         print("Setting escs to lowest value. ")
-        self.write_servos([self.throttlemin, self.turnmiddle])
+        self.write_servos([self.throttlemin, self.steeringmiddle])
         time.sleep(0.3)
 
     def callback(self, msg: ActionsStamped):
