@@ -68,10 +68,10 @@ class AgentDriver:
     Publish actions provided by policy if allowed to act
     """
     def __init__(self):
-        policypath = os.path.join("data", "policy", "ppo_tcnn_2022_04_22_11_57_47_144995.zip")
+        policypath = os.path.join("data", "policy", "ppo_2022_04_18_12_00_09_493536.zip")
         n_wps = 10
         bufsize = 1
-        pointspath = os.path.join("data", "points", "n10_wps500_smth50.npy")
+        pointspath = os.path.join("data", "points", "lap_r1_s3.npy")
         points = load_raw_data(path=pointspath)
         initvector = np.array([0, 0, 0, -1, 0])
         self.agent = Agent()
