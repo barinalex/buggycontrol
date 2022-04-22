@@ -28,8 +28,13 @@ class JoyConverter:
 
     def callback(self, msg):
         """
+        The button A pushed means agent is allowed to drive.
+        Therefore, return and don't publish actions.
+
         :param msg: raw input from joystick
         """
+        if msg.buttons[0]:
+            return
         with self.actlock:
             self.msg = ActionsStamped()
             msg.header = Header(stamp=rospy.Time.now(), frame_id="base_link")
