@@ -2,7 +2,7 @@
 import rospy
 from buggycontrol.msg import ActionsStamped
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Point, Quaternion, Vector3
+from geometry_msgs.msg import Point, Quaternion, Vector3, PoseStamped
 from std_msgs.msg import Header
 from threading import Lock
 from agent import Agent
@@ -87,6 +87,7 @@ class AgentDriver:
         rospy.Subscriber("/camera/odom/sample", Odometry, self.odomcallback)
         self.bl2rs = get_static_tf("odom", "camera_odom_frame")
         pub = rospy.Publisher("actions", ActionsStamped, queue_size=10)
+        statepub = rospy.Publisher("imaginarystate", PoseStamped, queue_size=10)
         self.actlock = Lock()
         self.odomlock = Lock()
         self.msg = None
@@ -96,7 +97,17 @@ class AgentDriver:
                 if self.msg:
                     pub.publish(self.msg)
                     self.msg = None
+                    statepub.publish(self.makepose())
             rate.sleep()
+
+    def makepose(self) -> PoseStamped:
+        pose = PoseStamped()
+        pose.header = Header(stamp=rospy.Time.now(), frame_id="base_link")
+        pos = self.state.getpos()
+        orn = self.state.getorn()
+        pose.pose.position = Point(pos[0], pos[1], pos[2])
+        pose.pose.orientation = Quaternion(x=orn[1], y=orn[2], z=orn[3], w=orn[0])
+        return pose
 
     def updatestate(self):
         with self.odomlock:
