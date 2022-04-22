@@ -79,6 +79,7 @@ class AgentDriver:
         self.state = State(timestep=0.005)
         self.waypointer = Waypointer(n_wps=n_wps, points=points)
         self.actbuffer = QueueBuffer(size=bufsize, initvector=initvector)
+        self.velbuffer = QueueBuffer(size=10, initvector=initvector)
         self.lin = np.zeros(3)
         self.ang = np.zeros(3)
         self.action = np.array([-1, 0])
