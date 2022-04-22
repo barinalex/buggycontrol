@@ -32,7 +32,7 @@ class JoyConverter:
         """
         with self.actlock:
             self.msg = ActionsStamped()
-            msg.header = Header(stamp=rospy.Time.now(), frame_id="base_link", seq=ctr)
+            msg.header = Header(stamp=rospy.Time.now(), frame_id="base_link")
             self.msg.throttle, self.msg.turn = msg.axes[1], msg.axes[3]
             self.msg.buttonA, self.msg.buttonB = msg.buttons[0], msg.buttons[1]
 
