@@ -13,6 +13,21 @@ import numpy as np
 import tf
 import tf2_ros
 import time
+import sys
+import os
+
+
+def load_raw_data(path: str) -> np.ndarray:
+    """
+    load data from a file. exit on fail
+
+    :param path: path to a file
+    :return: numpy array
+    """
+    try:
+        return np.load(path)
+    except Exception as e:
+        sys.exit(f"ERROR WHILE LOADING DATA: {e}")
 
 
 def get_static_tf(source_frame, target_frame):
@@ -53,13 +68,14 @@ class AgentDriver:
     Publish actions provided by policy if allowed to act
     """
     def __init__(self):
-        path = "ppo_tcnn_2022_04_22_11_57_47_144995.zip"
+        policypath = os.path.join("data", "policy", "ppo_tcnn_2022_04_22_11_57_47_144995.zip")
         n_wps = 10
         bufsize = 1
-        points = np.random.rand((1, 500, 2))
+        pointspath = os.path.join("data", "points", "n10_wps500_smth50.npy")
+        points = load_raw_data(path=pointspath)
         initvector = np.array([0, 0, 0, -1, 0])
         self.agent = Agent()
-        self.agent.load(path=path)
+        self.agent.load(path=policypath)
         self.state = State(timestep=0.005)
         self.waypointer = Waypointer(n_wps=n_wps, points=points)
         self.actbuffer = QueueBuffer(size=bufsize, initvector=initvector)
