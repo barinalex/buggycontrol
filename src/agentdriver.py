@@ -96,11 +96,14 @@ class AgentDriver:
             with self.actlock:
                 if self.msg:
                     pub.publish(self.msg)
-                    self.msg = None
                     statepub.publish(self.makepose())
+                    self.msg = None
             rate.sleep()
 
     def makepose(self) -> PoseStamped:
+        """
+        :return: position and orientation that agent imagines to itself
+        """
         pose = PoseStamped()
         pose.header = Header(stamp=rospy.Time.now(), frame_id="base_link")
         pos = self.state.getpos()
@@ -110,6 +113,9 @@ class AgentDriver:
         return pose
 
     def updatestate(self):
+        """
+        Given velocities from sensor update imaginary state
+        """
         with self.odomlock:
             self.state.set(vel=self.lin, ang=self.ang)
         self.state.update_pos()
