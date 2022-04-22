@@ -7,6 +7,10 @@ import numpy as np
 
 
 class JoyConverter:
+    """
+    Receive input from joystick and convert it to
+    Action messages that are published with a rate 200
+    """
     def __init__(self):
         rospy.init_node("joyconverter")
         rospy.Subscriber("joy", Joy, self.callback)
