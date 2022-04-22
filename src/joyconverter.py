@@ -10,12 +10,12 @@ class JoyConverter:
         rospy.init_node("joyconverter")
         rospy.Subscriber("joy", Joy, self.callback)
         pub = rospy.Publisher("actions", Actions, queue_size=10)
-        self.throttle = 0
+        self.throttle = -1
         self.turn = 0
         self.a = False
         self.b = False
         self.update = False
-        self.data = None
+        self.data = (-1, 0, False, False)
         rate = rospy.Rate(200)
         while not rospy.is_shutdown():
             if self.update:
@@ -26,7 +26,6 @@ class JoyConverter:
             msg.buttonA, msg.buttonB = self.a, self.b
             pub.publish(msg)
             rate.sleep()
-
 
     def callback(self, msg):
         """
